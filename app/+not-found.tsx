@@ -1,9 +1,13 @@
+import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function Index() {
+export default function NotFoundScreen() {
   return (
     <View style= {styles.container}>
-      <Text style ={styles.text}>Página inicial</Text>
+      <Text style ={styles.text}>Página não encontrada!</Text>
+      <Link href={"/../(tabs)/index"} style = {styles.link}>
+        Retornar para página inicial
+      </Link>
     </View>
   );
 }
