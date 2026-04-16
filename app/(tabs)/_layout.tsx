@@ -1,12 +1,18 @@
-import { Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
-  return <Stack>
-  <Stack.Screen name="index"
+  return <Tabs>
+  <Tabs.Screen name="index"
   options = {{headerTitle: "Página inicial",
   headerLeft: () => <></>}}/>
-  <Stack.Screen name="about" 
+  <Tabs.Screen name="about" 
   options = {{headerTitle: "Sobre"}}/>
-  <Stack.Screen name = "not-found"/>
-  </Stack>
+  <Tabs.Screen name = "not-found"/>
+  <Tabs.Screen name="local-to-do"
+  options = {{headerTitle: "Tarefas Local", tabBarIcon:({focused, color})=>
+    (<Ionicons name= {focused ? "checkmark-circle" : "checkmark-circle-outline"} 
+    color={color} 
+    size={24}/>)}}/>
+  </Tabs>
 }

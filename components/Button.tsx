@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
     label: string;
-    theme?: "primary";
+    theme?: "primary" | "green" | "red";
     onPress?: () => void;
 };
 
@@ -24,6 +24,24 @@ export default function Button({ label, theme, onPress }: Props) {
             </View>
         );
     }
+    else if (theme === "green") {
+        return (
+            <View style={[styles.smallButtonContainer ]}>
+                <Pressable style={[styles.button, { backgroundColor: "#77ec75" }]} onPress={onPress}>
+                    <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
+                </Pressable>
+            </View>
+        )
+    }
+    else if (theme === "red") {
+        return (
+            <View style={[styles.smallButtonContainer ]}>
+                <Pressable style={[styles.button, { backgroundColor: "#f74d4d" }]} onPress={onPress}>
+                    <Text style={[styles.buttonLabel, { color: "#fff" }]}>{label}</Text>
+                </Pressable>
+            </View>
+        )
+    };
 }
 
 const styles = StyleSheet.create({
@@ -51,5 +69,13 @@ const styles = StyleSheet.create({
     },
     buttonIcon:{
         paddingRight:8,
+    },
+    smallButtonContainer:{
+        width: 100,
+        height: 50,
+        marginHorizontal: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        padding:3,
     }
 });
