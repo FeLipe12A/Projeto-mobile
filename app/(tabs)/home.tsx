@@ -7,14 +7,14 @@ import * as SQLite from 'expo-sqlite';
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from "react-native-reanimated";
 
 const PlaceholderImage = require("../../assets/images/background-image.png");
 
-export default function Index() {
+export default function Home() {
   const [ selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
