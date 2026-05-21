@@ -2,14 +2,15 @@ import Button from "@/components/Button";
 import DropdownComponent from "@/components/Dropdown";
 import ImageViewer from "@/components/ImageViewer";
 import ModalMenu from "@/components/ModalMenu";
+import { db } from "@/FirebaseConfig";
 import * as ImagePicker from "expo-image-picker";
-import * as SQLite from 'expo-sqlite';
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 
 const PlaceholderImage = require("../../assets/images/background-image.png");
@@ -50,13 +51,19 @@ export default function Home() {
   };
 
   const getSelectedColor = async () => {
-    const db = await SQLite.openDatabaseAsync('database');
     try {
-      const SavedColor = await db.getAllAsync("SELECT value FROM cor WHERE id = 'SelectedColor'");
+      const colorDoc = doc(db, 'settings', 'SelectedColor');
+      const docSnap = await getDoc(colorDoc);
 
-      backgroundColor.value = SavedColor[0].value;
-    } catch {
-      console.log("Erro ao ler dado");
+      if (docSnap.exists()) {
+        const savedColor = docSnap.data().value as string;
+        backgroundColor.value = savedColor;
+      } else {
+        await setDoc(colorDoc, { value: '#fffeff' });
+        backgroundColor.value = '#fffeff';
+      }
+    } catch (error) {
+      console.error('Erro ao ler cor do Firestore:', error);
     }
   };
 
@@ -65,22 +72,8 @@ export default function Home() {
   }));
 
   useEffect(() => {
-    async function setUp(){
-      const db = await SQLite.openDatabaseAsync('database');
-
-      await db.execAsync(`PRAGMA journal_mode = WAL;
-        CREATE TABLE IF NOT EXISTS cor (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);`);
-
-        try {
-          await db.runAsync('INSERT INTO cor (id, value) VALUES ("SelectedColor", "#fffeff")');
-        } catch {
-          console.log("Erro de inserção");
-        }
-    }
-    setUp();
+    getSelectedColor();
   }, []);
-
-  getSelectedColor();
 
   return (
     <Animated.View style= {[styles.container, animatedStyle]}>

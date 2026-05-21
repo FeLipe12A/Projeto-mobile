@@ -41,7 +41,15 @@ export default function Button({ label, theme, onPress }: Props) {
                 </Pressable>
             </View>
         )
-    };
+    }
+
+    return (
+        <View style={[styles.smallButtonContainer]}>
+            <Pressable style={[styles.button, { backgroundColor: '#cbe4ef' }]} onPress={onPress}>
+                <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
+            </Pressable>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -71,9 +79,9 @@ const styles = StyleSheet.create({
         paddingRight:8,
     },
     smallButtonContainer:{
-        width: 100,
+        width: 150,
         height: 50,
-        marginHorizontal: 20,
+        marginTop: 20,
         alignItems: "center",
         justifyContent: "center",
         padding:3,

@@ -1,5 +1,6 @@
-import * as SQLite from 'expo-sqlite';
-import React, { useState } from 'react';
+import { db } from "@/FirebaseConfig";
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
@@ -10,7 +11,7 @@ type Props = {
 };
 
 export default function DropdownComponent({data, saveAt, onChoose}: Props){
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState<string | null>(null);
     const [isFocus, setIsFocus] = useState(false);
     let selectedColor = "Selecione a cor";
 
@@ -25,14 +26,26 @@ export default function DropdownComponent({data, saveAt, onChoose}: Props){
         return null;
     };
 
-    const update = async (value: string) => {
-        const db = await SQLite.openDatabaseAsync('database');
-        try {
-            const SavedColor = await db.getAllAsync("SELECT value FROM cor WHERE id = ?", saveAt);
-            await db.runAsync('UPDATE cor SET value = ? WHERE id = ?', value, saveAt);
-        } catch {
-            await db.runAsync('INSERT INTO cor (id, value) VALUES (?, ?', saveAt, value);
+    useEffect(() => {
+        async function loadValue() {
+            try {
+                const docRef = doc(db, 'settings', saveAt);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const savedValue = docSnap.data().value as string;
+                    setValue(savedValue);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar cor do Firestore:', error);
+            }
         }
+
+        loadValue();
+    }, [saveAt]);
+
+    const update = async (newValue: string) => {
+        const docRef = doc(db, 'settings', saveAt);
+        await setDoc(docRef, { value: newValue }, { merge: true });
     };
 
     return (
@@ -54,11 +67,12 @@ export default function DropdownComponent({data, saveAt, onChoose}: Props){
                 value={value}
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                    setValue(item.value);
+                onChange={async item => {
+                    const newValue = item.value;
+                    setValue(newValue);
                     setIsFocus(false);
-                    update(item.value);
-                    onChoose;
+                    await update(newValue);
+                    onChoose?.();
                 }}
             />
         </View>
